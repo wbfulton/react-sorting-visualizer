@@ -15,7 +15,7 @@ class Bars extends React.Component {
         this.state = {
             algorithm: this.bubbleSort,
             array: this.props.array,
-            step: 0,
+            step: -1,
         };
 
     }
@@ -34,8 +34,11 @@ class Bars extends React.Component {
         }
         */
         // THIS DOES BUBBLE SORT STEP WISE
+        if(step === -2) {
+            this.setState({ step: 0 });
+        }
         // highlight two bars
-        this.setState({ array });
+        // this.setState({ array });
         // perform swap logic
         if (step === array.length - 1) {
             this.setState({ step: 0 });
@@ -68,7 +71,7 @@ class Bars extends React.Component {
             funcAlgo = this.mergeSort;
         }
 
-        this.setState({ algorithm: funcAlgo });
+        this.setState({ algorithm: funcAlgo, step: -1 });
     }
 
     insertionSort() {
@@ -111,9 +114,9 @@ class Bars extends React.Component {
                         <Bar
                             key={i}
                             value={value}
-                            style={
+                            style={this.state.step >= 0 ? 
                                 i === this.state.step ||
-                                i === this.state.step + 1
+                                i === this.state.step + 1 : false
                             }
                         />
                     ))}
