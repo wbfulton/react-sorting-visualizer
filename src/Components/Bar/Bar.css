@@ -1,0 +1,12 @@
+.bar {
+    margin: 0 0.2em;
+    background-color: skyblue;
+    border-bottom: 2px solid blueviolet;
+    border-radius: 5px;
+    min-width: 10px;
+}
+
+.value {
+    padding: 0.2em;
+    margin: 0;
+}
