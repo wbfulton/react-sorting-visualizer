@@ -4,9 +4,13 @@
     border-bottom: 2px solid blueviolet;
     border-radius: 5px;
     min-width: 10px;
+    display: flex;
+    overflow: hidden;
 }
 
 .value {
-    padding: 0.2em;
-    margin: 0;
+    margin: 0.2em;
+    display: block;
+    font-size: calc(0.2rem + 1.0vw);
+    min-width: 0px;
 }

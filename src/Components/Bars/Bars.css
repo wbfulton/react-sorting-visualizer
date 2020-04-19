@@ -1,7 +1,7 @@
 .bar-container {
-    border: 2px solid black;
+    border-bottom: 2px solid black;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    min-height: 60vh;
+    min-height: 65vh;
 }

@@ -2,8 +2,9 @@ import React from 'react';
 import './Bars.css';
 import Bar from '../Bar/Bar.js';
 
-const min = 20;
-const max = 400;
+// changes height of bars on refresh
+const min = window.innerHeight * 0.025;
+const max = window.innerHeight * 0.6;
 
 class Bars extends React.Component {
     constructor(props) {

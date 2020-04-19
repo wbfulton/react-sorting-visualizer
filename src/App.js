@@ -1,18 +1,17 @@
 import React from 'react';
 import './App.css';
 import Bars from './Components/Bars/Bars.js';
+import Navbar from './Components/Navbar/Navbar.js';
+
+// changes number of bars on refresh
+const width = window.innerWidth;
+const numBars = Math.floor(width / 40);
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>React Sorting Visualizer</h1>
-        <p>
-          Created April 19th, 2020
-        </p>
-
-      </header>
-      <Bars />
+      <Navbar />
+      <Bars numBars={numBars}/>
     </div>
   );
 }
