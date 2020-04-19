@@ -5,3 +5,15 @@
     justify-content: center;
     min-height: 65vh;
 }
+
+.button {
+    font-size: 1rem;
+    background-color: skyblue;
+    border: 2px solid blueviolet;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.button:hover {
+    background-color: cornflowerblue;
+}
