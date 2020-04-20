@@ -13,6 +13,7 @@ class Bars extends React.Component {
         this.mergeSort = this.mergeSort.bind(this);
         this.insertionSort = this.insertionSort.bind(this);
         this.auto = this.auto.bind(this);
+        this.setSpeed = this.setSpeed.bind(this);
         // for testing
         this.isEqual = this.isEqual.bind(this);
 
@@ -20,8 +21,15 @@ class Bars extends React.Component {
             algorithm: this.bubbleSort,
             array: this.props.array,
             step: -1,
-            speed: 200
+            speed: 50
         };
+    }
+
+    // changes speed
+    setSpeed(e) {
+        const speed = parseInt(e.target.value);
+        
+        this.setState({speed: speed});
     }
 
     // runs algorithm
@@ -120,6 +128,7 @@ class Bars extends React.Component {
                     auto={this.auto}
                     algorithm={this.state.algorithm}
                     chooseAlgorithm={this.chooseAlgorithm}
+                    setSpeed={this.setSpeed}
                     step={this.state.step}
                     array={this.state.array}
                 />
