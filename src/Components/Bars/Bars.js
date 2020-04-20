@@ -13,26 +13,58 @@ class Bars extends React.Component {
         this.mergeSort = this.mergeSort.bind(this);
         this.insertionSort = this.insertionSort.bind(this);
         this.auto = this.auto.bind(this);
+        // for testing
+        this.isEqual = this.isEqual.bind(this);
 
         this.state = {
             algorithm: this.bubbleSort,
             array: this.props.array,
             step: -1,
+            speed: 200
         };
     }
 
     // runs algorithm
     auto() {
-        setInterval(this.state.algorithm, 200);
+        const running = setInterval(() => {
+            // stops when array is sorted, and we are back to start of array
+            // turns all bars green
+            if (this.isEqual(this.state.array, this.props.sortedArray) && this.state.step === 0) {
+                clearInterval(running);
+                for(let i = 0; i < this.state.array.length; i++) {
+                    const bar = document.getElementById(`${i}`);
+                    bar.style.backgroundColor = 'forestgreen';
+                }
+            } else {
+                this.state.algorithm();
+            }
+        }, this.state.speed);
+        // clearInterval stops it
+        // changes this later
     }
-    
+
+    // check if two arrays are equal
+    isEqual(arr1, arr2) {
+        if (arr1.length !== arr2.length) {
+            return false;
+        }
+
+        for (let i = 0; i < arr1.length; i++) {
+            if (arr1[i] !== arr2[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // performs a step function of bubbleSort
     bubbleSort() {
         const array = this.state.array;
         const step = this.state.step;
 
         // THIS DOES BUBBLE SORT STEP WISE
-        if(step === -2) {
+        if (step === -2) {
             this.setState({ step: 0 });
         }
         // perform swap logic
@@ -44,7 +76,6 @@ class Bars extends React.Component {
             this.setState({ step: step + 1 });
         }
     }
-    
 
     // swaps two bars in the state array
     swapBars(i, j) {
@@ -96,6 +127,7 @@ class Bars extends React.Component {
                     {this.state.array.map((value, i) => (
                         <Bar
                             key={i}
+                            id={i}
                             value={value}
                             style={
                                 this.state.step >= 0
