@@ -1,6 +1,7 @@
 import React from 'react';
 import './Bars.css';
 import Bar from '../Bar/Bar.js';
+import Selector from '../Selector/Selector.js';
 
 class Bars extends React.Component {
     constructor(props) {
@@ -11,34 +12,29 @@ class Bars extends React.Component {
         this.quickSort = this.quickSort.bind(this);
         this.mergeSort = this.mergeSort.bind(this);
         this.insertionSort = this.insertionSort.bind(this);
+        this.auto = this.auto.bind(this);
 
         this.state = {
             algorithm: this.bubbleSort,
             array: this.props.array,
             step: -1,
         };
-
     }
 
+    // runs algorithm
+    auto() {
+        setInterval(this.state.algorithm, 200);
+    }
+    
     // performs a step function of bubbleSort
     bubbleSort() {
         const array = this.state.array;
         const step = this.state.step;
-        /*
-        for (let i = 0; i < 2; i++) {
-            for (let j = i + 1; j < 2; i++) {
-                if(array[i] > array[j]) {
-                    this.swapBars(i, j);
-                }
-            }
-        }
-        */
+
         // THIS DOES BUBBLE SORT STEP WISE
         if(step === -2) {
             this.setState({ step: 0 });
         }
-        // highlight two bars
-        // this.setState({ array });
         // perform swap logic
         if (step === array.length - 1) {
             this.setState({ step: 0 });
@@ -48,6 +44,7 @@ class Bars extends React.Component {
             this.setState({ step: step + 1 });
         }
     }
+    
 
     // swaps two bars in the state array
     swapBars(i, j) {
@@ -88,35 +85,23 @@ class Bars extends React.Component {
         // maps bars from array
         return (
             <div>
-                <div className="flex-container">
-                    {/* Selects Sorting Algorithm*/}
-                    <select
-                        className="button"
-                        name="algorithm"
-                        onChange={(e) => this.chooseAlgorithm(e)}
-                    >
-                        <option value="bubbleSort">Bubble Sort</option>
-                        <option value="insertionSort">Insertion Sort</option>
-                        <option value="mergeSort">Merge Sort</option>
-                        <option value="quickSort">Quick Sort</option>
-                    </select>
-                    {/* Does One Step of the Algorithm*/}
-                    <button className="button" onClick={this.state.algorithm}>
-                        Step
-                    </button>
-                    {/* Runs Sorting Algorithm */}
-                    <button className="button" onClick={this.state.algorithm}>
-                        Bubble Sort
-                    </button>
-                </div>
+                <Selector
+                    auto={this.auto}
+                    algorithm={this.state.algorithm}
+                    chooseAlgorithm={this.chooseAlgorithm}
+                    step={this.state.step}
+                    array={this.state.array}
+                />
                 <div className="bar-container">
                     {this.state.array.map((value, i) => (
                         <Bar
                             key={i}
                             value={value}
-                            style={this.state.step >= 0 ? 
-                                i === this.state.step ||
-                                i === this.state.step + 1 : false
+                            style={
+                                this.state.step >= 0
+                                    ? i === this.state.step ||
+                                      i === this.state.step + 1
+                                    : false
                             }
                         />
                     ))}

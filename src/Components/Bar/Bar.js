@@ -2,11 +2,6 @@ import React from 'react';
 import './Bar.css';
 
 class Bar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-
     render() {
         return (
             <div className="bar" style={{height: this.props.value, backgroundColor: this.props.style ? 'blueviolet' : 'skyblue' }}>
