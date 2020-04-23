@@ -15,11 +15,12 @@ class Bars extends React.Component {
             algorithm: this.bubbleSort,
             array: [],
             sortedArray: [],
+            swap: [],
+            compare: [],
             index: 0,
             intervalTime: 50,
             running: false,
-            swap : [],
-            compare : [],
+            intervals: null,
         };
     }
 
@@ -38,6 +39,7 @@ class Bars extends React.Component {
             bar.style.borderBottom = '2px solid blueviolet';
             bar.style.color = 'black';
         }
+        this.stopAlgo();
         this.componentDidMount();
     };
 
@@ -55,28 +57,34 @@ class Bars extends React.Component {
             bar.style.color = 'forestgreen';
             bar.style.backgroundColor = 'skyblue';
         }
-    }
+    };
 
     // runs algorithm, stops when clicked twice
-    auto = () => {
-        // if statements insures that only one instance of auto runs at a time
+    runAlgo = () => {
+        // ensures only one auto runs at a time
         if (!this.state.running) {
             this.setState({ running: true });
-            const intervals = setInterval(() => {
-                // stops when array is sorted, and we are back to start of array
-                // turns all bars green
-                if (
-                    isEqual(this.state.array, this.state.sortedArray) &&
-                    this.state.index === 0
-                ) {
-                    clearInterval(intervals);
-                    this.setState({ running: false });
-                    this.success();
-                } else {
-                    this.state.algorithm();
-                }
-            }, this.state.intervalTime);
+            this.setState({
+                intervals: setInterval(() => {
+                    // stops when array is sorted, and we are back to start of array
+                    // turns all bars green
+                    const array = this.state.array;
+                    const sortedArray = this.state.sortedArray;
+
+                    if (isEqual(array, sortedArray) && this.state.index === 0) {
+                        this.stopAlgo();
+                        this.success();
+                    } else {
+                        this.state.algorithm();
+                    }
+                }, this.state.intervalTime),
+            });
         }
+    };
+
+    stopAlgo = () => {
+        clearInterval(this.state.intervals);
+        this.setState({ intervals: null, running: false });
     };
 
     setIndex = (index) => {
@@ -107,7 +115,10 @@ class Bars extends React.Component {
     // we can pass in functions to set index and set array
     bubbleSort = () => {
         // so we can run steps after its sorted
-        if(!isEqual(this.state.array, this.state.sortedArray) || this.state.index !== 0) {
+        if (
+            !isEqual(this.state.array, this.state.sortedArray) ||
+            this.state.index !== 0
+        ) {
             bubbleSort(
                 this.state.array,
                 this.state.index,
@@ -133,29 +144,30 @@ class Bars extends React.Component {
     }
 
     setCompare = (i, j) => {
-        let compare = []
+        let compare = [];
         // so we can reset swap
-        if(i !== -1 && j !== -1) {
+        if (i !== -1 && j !== -1) {
             compare = [i, j];
         }
-        this.setState({compare: compare});
-    }
+        this.setState({ compare: compare });
+    };
 
     setSwap = (i, j) => {
-        let swap = []
+        let swap = [];
         // so we can reset swap
-        if(i !== -1 && j !== -1) {
+        if (i !== -1 && j !== -1) {
             swap = [i, j];
         }
-        this.setState({swap: swap});
-    }
+        this.setState({ swap: swap });
+    };
 
     render() {
         // maps bars from array
         return (
             <div>
                 <Selector
-                    auto={this.auto}
+                    sort={this.state.running ? this.stopAlgo : this.runAlgo}
+                    toggle={this.state.running}
                     resetArray={this.resetArray}
                     algorithm={this.state.algorithm}
                     chooseAlgorithm={this.chooseAlgorithm}

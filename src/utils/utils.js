@@ -2,11 +2,12 @@
 export function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    //The maximum is exclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
-// creates and returns array of bars with random heights from min to max
-// gives bar key of index when created, value of random height
+// returns array with random integers based on window height
+// and size based of width of window
 export function initArray() {
     // changes number of bars on refresh
     const width = window.innerWidth;
@@ -15,15 +16,15 @@ export function initArray() {
     const min = window.innerHeight * 0.025;
     const max = window.innerHeight * 0.6;
 
-    const barsArray = [];
+    const array = [];
     for (let i = 0; i < numBars; i++) {
-        barsArray[i] = getRandomInt(min, max);
+        array[i] = getRandomInt(min, max);
     }
 
-    return barsArray;
+    return array;
 }
 
-// check if two arrays are equal
+// checks if two arrays are equal
 export function isEqual(arr1, arr2) {
     if (arr1.length !== arr2.length) {
         return false;
@@ -38,26 +39,17 @@ export function isEqual(arr1, arr2) {
     return true;
 }
 
-// js sort array function
+// returns sorted array
 export function sortArray(array) {
     return array.slice().sort((a, b) => {
         return a > b ? 1 : b > a ? -1 : 0;
     });
 }
 
-// swaps two bars in the state array
+// swaps two bars and returns array
 export function swapBars(array, i, j) {
     const value = array[i];
     array[i] = array[j];
     array[j] = value;
-    // highlight swap
-
-    /*
-    const bar1 = document.getElementById(`${i}`);
-    const bar2 = document.getElementById(`${j}`);
-    bar1.style.backgroundColor = 'red';
-    bar2.style.backgroundColor = 'red';
-    */
-
     return array;
 }

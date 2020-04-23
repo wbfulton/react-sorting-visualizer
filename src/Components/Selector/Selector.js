@@ -26,15 +26,19 @@ function Selector(props) {
                 Step
             </button>
             {/* Sets Interval Time */}
-            <select className="button" name="interval-time" onChange={props.setIntervalTime}>
+            <select
+                className="button"
+                name="interval-time"
+                onChange={props.setIntervalTime}
+            >
                 <option value={50}>Speedy Fast</option>
                 <option value={200}>Fast</option>
                 <option value={600}>Medium</option>
                 <option value={1000}>Slow</option>
             </select>
             {/* Runs Sorting Algorithm */}
-            <button className="button" onClick={props.auto}>
-                Sort!
+            <button className="button" onClick={props.sort}>
+                {props.toggle ? 'Stop!' : 'Sort!'}
             </button>
         </div>
     );
@@ -42,7 +46,8 @@ function Selector(props) {
 
 Selector.propTypes = {
     setIntervalTime: PropTypes.func.isRequired,
-    auto: PropTypes.func.isRequired,
+    sort: PropTypes.func.isRequired,
+    toggle: PropTypes.bool.isRequired,
     algorithm: PropTypes.func.isRequired,
     chooseAlgorithm: PropTypes.func.isRequired,
     resetArray: PropTypes.func.isRequired,
