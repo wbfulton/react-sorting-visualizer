@@ -2,7 +2,8 @@ import React from 'react';
 import './Bars.css';
 import Bar from '../Bar/Bar.js';
 import Selector from '../Selector/Selector.js';
-import { initArray, sortArray, isEqual, swapBars } from '../../utils/utils.js';
+import { initArray, sortArray, isEqual } from '../../utils/utils.js';
+import bubbleSort from '../../Algorithms/bubbleSort.js';
 
 class Bars extends React.Component {
     constructor(props) {
@@ -62,38 +63,31 @@ class Bars extends React.Component {
     // performs a step function of bubbleSort
     // we can pass in functions to set steps and set array
     bubbleSort = () => {
-        const array = this.state.array;
-        const step = this.state.step;
+        bubbleSort(this.state.array, this.setArray, this.state.step, this.setStep)
+    }
 
-        // THIS DOES BUBBLE SORT STEP WISE
-        if (step === -2) {
-            this.setState({ step: 0 });
-        }
-        // perform swap logic
-        if (step === array.length - 1) {
-            this.setState({ step: 0 });
-        } else if (array[step] > array[step + 1]) {
-            const newArray = swapBars(this.state.array, step, step + 1);
-            this.setState({ array: newArray });
-        } else {
-            this.setState({ step: step + 1 });
-        }
-    };
+    setStep = (step) => {
+        this.setState({step: step});
+    }
+
+    setArray = (array) => {
+        this.setState({ array: array });
+    }
 
     // Changes algorithm chosen by users
     chooseAlgorithm = (e) => {
         const stringAlgo = e.target.value;
-        let funcAlgo = this.bubbleSort;
+        let func = this.bubbleSort;
 
         if (stringAlgo === 'quickSort') {
-            funcAlgo = this.quickSort;
+            func = this.quickSort;
         } else if (stringAlgo === 'insertionSort') {
-            funcAlgo = this.insertionSort;
+            func = this.insertionSort;
         } else if (stringAlgo === 'mergeSort') {
-            funcAlgo = this.mergeSort;
+            func = this.mergeSort;
         }
 
-        this.setState({ algorithm: funcAlgo, step: -1 });
+        this.setState({ algorithm: func, step: -1 });
     };
 
     insertionSort() {
@@ -116,8 +110,6 @@ class Bars extends React.Component {
                     algorithm={this.state.algorithm}
                     chooseAlgorithm={this.chooseAlgorithm}
                     setSpeed={this.setSpeed}
-                    step={this.state.step}
-                    array={this.state.array}
                 />
                 <div className="bar-container">
                     {this.state.array.map((value, i) => (
