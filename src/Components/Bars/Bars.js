@@ -18,6 +18,7 @@ class Bars extends React.Component {
             swap: [],
             compare: [],
             index: 0,
+            sortedIndices: [],
             intervalTime: 50,
             running: false,
             intervals: null,
@@ -33,7 +34,7 @@ class Bars extends React.Component {
 
     // resets all values
     resetArray = () => {
-        this.setState({ index: 0, swap: [], compare: [] });
+        this.setState({ index: 0, swap: [], compare: [] , sortedIndices: []});
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
             bar.style.borderBottom = '2px solid blueviolet';
@@ -49,7 +50,9 @@ class Bars extends React.Component {
         this.setState({ intervalTime: intervalTime });
     };
 
+    
     // changes color of bars to success
+    // this cleans up any bars not set to green
     success = () => {
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
@@ -58,6 +61,7 @@ class Bars extends React.Component {
             bar.style.backgroundColor = 'skyblue';
         }
     };
+    
 
     // runs algorithm, stops when clicked twice
     runAlgo = () => {
@@ -86,6 +90,13 @@ class Bars extends React.Component {
         clearInterval(this.state.intervals);
         this.setState({ intervals: null, running: false });
     };
+
+    addSortedIndices = (i) => {
+        const indices = this.state.sortedIndices;
+        indices[indices.length] = i;
+        console.log(indices);
+        this.setState({ sortedIndices: indices })
+    }
 
     setIndex = (index) => {
         this.setState({ index: index });
@@ -126,6 +137,8 @@ class Bars extends React.Component {
                 this.setIndex,
                 this.setCompare,
                 this.setSwap,
+                this.addSortedIndices,
+                this.state.sortedIndices,
                 this.state.compare
             );
         } else {
