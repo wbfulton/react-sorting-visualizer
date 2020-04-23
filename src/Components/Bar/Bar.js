@@ -5,10 +5,19 @@ import './Bar.css';
 
 
 function Bar(props) {
+    let color;
+
+    if(props.swap) {
+        color = 'red';
+    } else if (props.compare){
+        color = 'blueviolet';
+    } else {
+        color = 'skyblue';
+    }
 
     const style = {
         height: props.value,
-        backgroundColor: props.style ? 'blueviolet' : 'skyblue',
+        backgroundColor: color
     };
 
     return (
@@ -24,7 +33,8 @@ Bar.defaultProps = {
 
 Bar.propTypes = {
     id: PropTypes.number.isRequired,
-    style: PropTypes.bool.isRequired,
+    swap: PropTypes.bool.isRequired,
+    compare: PropTypes.bool.isRequired,
 }
 
 export default Bar;

@@ -25,8 +25,8 @@ function Selector(props) {
             <button className="button" onClick={props.algorithm}>
                 Step
             </button>
-            {/* Sets Speed */}
-            <select className="button" name="speed" onChange={props.setSpeed}>
+            {/* Sets Interval Time */}
+            <select className="button" name="interval-time" onChange={props.setIntervalTime}>
                 <option value={50}>Speedy Fast</option>
                 <option value={200}>Fast</option>
                 <option value={600}>Medium</option>
@@ -41,7 +41,7 @@ function Selector(props) {
 }
 
 Selector.propTypes = {
-    setSpeed: PropTypes.func.isRequired,
+    setIntervalTime: PropTypes.func.isRequired,
     auto: PropTypes.func.isRequired,
     algorithm: PropTypes.func.isRequired,
     chooseAlgorithm: PropTypes.func.isRequired,

@@ -9,13 +9,17 @@ class Bars extends React.Component {
     constructor(props) {
         super(props);
 
+        // swap, compare hold indices of bars being swapped or compared at that instance
+        // running tells us if algorithm is running
         this.state = {
             algorithm: this.bubbleSort,
             array: [],
             sortedArray: [],
-            index: -1,
-            speed: 50,
-            auto: false,
+            index: 0,
+            intervalTime: 50,
+            running: false,
+            swap : [],
+            compare : [],
         };
     }
 
@@ -28,7 +32,7 @@ class Bars extends React.Component {
 
     // resets all values
     resetArray = () => {
-        this.setState({ index: -1 });
+        this.setState({ index: 0, swap: [], compare: [] });
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
             bar.style.borderBottom = '2px solid blueviolet';
@@ -38,35 +42,40 @@ class Bars extends React.Component {
     };
 
     // changes speed
-    setSpeed = (e) => {
-        const speed = parseInt(e.target.value);
-        this.setState({ speed: speed });
+    setIntervalTime = (e) => {
+        const intervalTime = parseInt(e.target.value);
+        this.setState({ intervalTime: intervalTime });
     };
+
+    // changes color of bars to success
+    success = () => {
+        for (let i = 0; i < this.state.array.length; i++) {
+            const bar = document.getElementById(`${i}`);
+            bar.style.borderBottom = '2px solid forestgreen';
+            bar.style.color = 'forestgreen';
+            bar.style.backgroundColor = 'skyblue';
+        }
+    }
 
     // runs algorithm, stops when clicked twice
     auto = () => {
         // if statements insures that only one instance of auto runs at a time
-        if (!this.state.auto) {
-            this.setState({ auto: true });
-            const running = setInterval(() => {
+        if (!this.state.running) {
+            this.setState({ running: true });
+            const intervals = setInterval(() => {
                 // stops when array is sorted, and we are back to start of array
                 // turns all bars green
                 if (
                     isEqual(this.state.array, this.state.sortedArray) &&
                     this.state.index === 0
                 ) {
-                    clearInterval(running);
-                    this.setState({ auto: false });
-                    for (let i = 0; i < this.state.array.length; i++) {
-                        const bar = document.getElementById(`${i}`);
-                        bar.style.borderBottom = '2px solid forestgreen';
-                        bar.style.color = 'forestgreen';
-                        bar.style.backgroundColor = 'skyblue';
-                    }
+                    clearInterval(intervals);
+                    this.setState({ running: false });
+                    this.success();
                 } else {
                     this.state.algorithm();
                 }
-            }, this.state.speed);
+            }, this.state.intervalTime);
         }
     };
 
@@ -91,18 +100,26 @@ class Bars extends React.Component {
             func = this.mergeSort;
         }
 
-        this.setState({ algorithm: func, index: -1 });
+        this.setState({ algorithm: func, index: 0 });
     };
 
     // performs a step of the function of bubbleSort
     // we can pass in functions to set index and set array
     bubbleSort = () => {
-        bubbleSort(
-            this.state.array,
-            this.state.index,
-            this.setArray,
-            this.setIndex
-        );
+        // so we can run steps after its sorted
+        if(!isEqual(this.state.array, this.state.sortedArray) || this.state.index !== 0) {
+            bubbleSort(
+                this.state.array,
+                this.state.index,
+                this.setArray,
+                this.setIndex,
+                this.setCompare,
+                this.setSwap,
+                this.state.compare
+            );
+        } else {
+            this.success();
+        }
     };
 
     insertionSort() {
@@ -115,6 +132,24 @@ class Bars extends React.Component {
         console.log('quick sort');
     }
 
+    setCompare = (i, j) => {
+        let compare = []
+        // so we can reset swap
+        if(i !== -1 && j !== -1) {
+            compare = [i, j];
+        }
+        this.setState({compare: compare});
+    }
+
+    setSwap = (i, j) => {
+        let swap = []
+        // so we can reset swap
+        if(i !== -1 && j !== -1) {
+            swap = [i, j];
+        }
+        this.setState({swap: swap});
+    }
+
     render() {
         // maps bars from array
         return (
@@ -124,7 +159,7 @@ class Bars extends React.Component {
                     resetArray={this.resetArray}
                     algorithm={this.state.algorithm}
                     chooseAlgorithm={this.chooseAlgorithm}
-                    setSpeed={this.setSpeed}
+                    setIntervalTime={this.setIntervalTime}
                 />
                 <div className="bar-container">
                     {this.state.array.map((value, i) => (
@@ -132,12 +167,8 @@ class Bars extends React.Component {
                             key={i}
                             id={i}
                             value={value}
-                            style={
-                                this.state.index >= 0
-                                    ? i === this.state.index ||
-                                      i === this.state.index + 1
-                                    : false
-                            }
+                            swap={this.state.swap.includes(i)}
+                            compare={this.state.compare.includes(i)}
                         />
                     ))}
                 </div>
