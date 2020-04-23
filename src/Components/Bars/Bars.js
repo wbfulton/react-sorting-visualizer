@@ -12,16 +12,16 @@ class Bars extends React.Component {
         // swap, compare hold indices of bars being swapped or compared at that instance
         // running tells us if algorithm is running
         this.state = {
-            algorithm: this.bubbleSort,
-            array: [],
-            sortedArray: [],
-            swap: [],
-            compare: [],
-            index: 0,
-            sortedIndices: [],
-            intervalTime: 50,
-            running: false,
-            intervals: null,
+            algorithm: this.bubbleSort, // stores algo to use
+            array: [], // current array
+            sortedArray: [], // sorted array for testing
+            swap: [], // which bars to display swapped
+            compare: [], // which bars to display compared
+            index: 0, // where the algo is looking
+            sortedIndices: [], // which bars are in final sorted place
+            intervalTime: 50, // how often steps are called (ms)
+            running: false, // if algo is running
+            intervals: null, // variable to hold interval (so algo can run)
         };
     }
 
@@ -48,6 +48,7 @@ class Bars extends React.Component {
     setIntervalTime = (e) => {
         const intervalTime = parseInt(e.target.value);
         this.setState({ intervalTime: intervalTime });
+        this.stopAlgo();
     };
 
     
@@ -64,7 +65,7 @@ class Bars extends React.Component {
     
 
     // runs algorithm, stops when clicked twice
-    runAlgo = () => {
+    startAlgo = () => {
         // ensures only one auto runs at a time
         if (!this.state.running) {
             this.setState({ running: true });
@@ -179,7 +180,7 @@ class Bars extends React.Component {
         return (
             <div>
                 <Selector
-                    sort={this.state.running ? this.stopAlgo : this.runAlgo}
+                    sort={this.state.running ? this.stopAlgo : this.startAlgo}
                     toggle={this.state.running}
                     resetArray={this.resetArray}
                     algorithm={this.state.algorithm}
