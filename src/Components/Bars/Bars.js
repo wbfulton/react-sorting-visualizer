@@ -2,72 +2,66 @@ import React from 'react';
 import './Bars.css';
 import Bar from '../Bar/Bar.js';
 import Selector from '../Selector/Selector.js';
+import { initArray, sortArray, isEqual, swapBars } from '../../utils/utils.js';
 
 class Bars extends React.Component {
     constructor(props) {
         super(props);
-        // we can pass this method in from another file
-        // allows us to reference these methods using this.
-        this.bubbleSort = this.bubbleSort.bind(this);
-        this.quickSort = this.quickSort.bind(this);
-        this.mergeSort = this.mergeSort.bind(this);
-        this.insertionSort = this.insertionSort.bind(this);
-        this.auto = this.auto.bind(this);
-        this.setSpeed = this.setSpeed.bind(this);
-        // for testing
-        this.isEqual = this.isEqual.bind(this);
 
         this.state = {
             algorithm: this.bubbleSort,
-            array: this.props.array,
+            array: [],
+            sortedArray: [],
             step: -1,
-            speed: 50
+            speed: 50,
         };
     }
 
-    // changes speed
-    setSpeed(e) {
-        const speed = parseInt(e.target.value);
-        
-        this.setState({speed: speed});
+    // runs before component renders
+    componentWillMount() {
+        const array = initArray();
+        const sortedArray = sortArray(array);
+        this.setState({ array: array, sortedArray: sortedArray });
     }
 
+    // resets all values
+    resetArray = () => {
+        this.setState({ step: -1 })
+        this.componentWillMount();
+    }
+
+    // changes speed
+    setSpeed = (e) => {
+        const speed = parseInt(e.target.value);
+        this.setState({ speed: speed });
+    };
+
     // runs algorithm
-    auto() {
+    auto = () => {
         const running = setInterval(() => {
             // stops when array is sorted, and we are back to start of array
             // turns all bars green
-            if (this.isEqual(this.state.array, this.props.sortedArray) && this.state.step === 0) {
+            if (
+                isEqual(this.state.array, this.state.sortedArray) &&
+                this.state.step === 0
+            ) {
                 clearInterval(running);
-                for(let i = 0; i < this.state.array.length; i++) {
+                for (let i = 0; i < this.state.array.length; i++) {
                     const bar = document.getElementById(`${i}`);
-                    bar.style.backgroundColor = 'forestgreen';
+                    bar.style.borderBottom = '2px solid forestgreen';
+                    bar.style.color = 'forestgreen';
+                    bar.style.backgroundColor = 'skyblue';
                 }
             } else {
                 this.state.algorithm();
             }
         }, this.state.speed);
-        // clearInterval stops it
-        // changes this later
-    }
+    };
 
-    // check if two arrays are equal
-    isEqual(arr1, arr2) {
-        if (arr1.length !== arr2.length) {
-            return false;
-        }
-
-        for (let i = 0; i < arr1.length; i++) {
-            if (arr1[i] !== arr2[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     // performs a step function of bubbleSort
-    bubbleSort() {
+    // we can pass in functions to set steps and set array
+    bubbleSort = () => {
         const array = this.state.array;
         const step = this.state.step;
 
@@ -79,23 +73,15 @@ class Bars extends React.Component {
         if (step === array.length - 1) {
             this.setState({ step: 0 });
         } else if (array[step] > array[step + 1]) {
-            this.swapBars(step, step + 1);
+            const newArray = swapBars(this.state.array, step, step + 1);
+            this.setState({ array: newArray });
         } else {
             this.setState({ step: step + 1 });
         }
-    }
-
-    // swaps two bars in the state array
-    swapBars(i, j) {
-        const array = this.state.array;
-        const value = array[i];
-        array[i] = array[j];
-        array[j] = value;
-        this.setState({ array: array });
-    }
+    };
 
     // Changes algorithm chosen by users
-    chooseAlgorithm(e) {
+    chooseAlgorithm = (e) => {
         const stringAlgo = e.target.value;
         let funcAlgo = this.bubbleSort;
 
@@ -108,7 +94,7 @@ class Bars extends React.Component {
         }
 
         this.setState({ algorithm: funcAlgo, step: -1 });
-    }
+    };
 
     insertionSort() {
         console.log('in sort');
@@ -126,6 +112,7 @@ class Bars extends React.Component {
             <div>
                 <Selector
                     auto={this.auto}
+                    resetArray={this.resetArray}
                     algorithm={this.state.algorithm}
                     chooseAlgorithm={this.chooseAlgorithm}
                     setSpeed={this.setSpeed}

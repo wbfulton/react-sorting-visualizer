@@ -1,5 +1,6 @@
 .bar {
     margin: 0 0.2em;
+    margin-top: 0.4em;
     background-color: skyblue;
     border-bottom: 2px solid blueviolet;
     border-radius: 5px;

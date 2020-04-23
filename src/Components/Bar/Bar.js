@@ -1,18 +1,28 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Bar.css';
 
-class Bar extends React.Component {
-    render() {
-        return (
-            <div className="bar" id={this.props.id} style={{height: this.props.value, backgroundColor: this.props.style ? 'blueviolet' : 'skyblue' }}>
-                <div className="value">{this.props.value}</div>
-            </div>
-        )
-    }
+
+function Bar(props) {
+
+    const style = {
+        height: props.value,
+        backgroundColor: props.style ? 'blueviolet' : 'skyblue',
+    };
+
+    return (
+        <div className="bar" id={props.id} style={style}>
+            <div className="value">{props.value}</div>
+        </div>
+    );
 }
 
 Bar.defaultProps = {
-    value: 10
+    value: 10,
+};
+
+Bar.propTypes = {
+    id: PropTypes.number.isRequired,
 }
 
 export default Bar;
