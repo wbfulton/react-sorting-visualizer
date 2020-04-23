@@ -50,5 +50,10 @@ export function swapBars(array, i, j) {
     const value = array[i];
     array[i] = array[j];
     array[j] = value;
+    // highlight swap
+    const bar1 = document.getElementById(`${i}`);
+    const bar2 = document.getElementById(`${j}`);
+    bar1.style.backgroundColor = 'red';
+    bar2.style.backgroundColor = 'red';
     return array;
 }

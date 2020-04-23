@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import './Bar.css';
 
 
+
 function Bar(props) {
 
     const style = {
@@ -23,6 +24,7 @@ Bar.defaultProps = {
 
 Bar.propTypes = {
     id: PropTypes.number.isRequired,
+    style: PropTypes.bool.isRequired,
 }
 
 export default Bar;
