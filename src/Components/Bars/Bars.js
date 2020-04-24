@@ -4,6 +4,7 @@ import Bar from '../Bar/Bar.js';
 import Selector from '../Selector/Selector.js';
 import { initArray, sortArray, isEqual } from '../../utils/utils.js';
 import bubbleSort from '../../Algorithms/bubbleSort.js';
+import { merge } from '../../Algorithms/mergeSort.js';
 
 class Bars extends React.Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class Bars extends React.Component {
             intervalTime: 50, // how often steps are called (ms)
             running: false, // if algo is running
             intervals: null, // variable to hold interval (so algo can run)
+            mergeSteps: 1,
         };
     }
 
@@ -34,10 +36,10 @@ class Bars extends React.Component {
 
     // resets all values
     resetArray = () => {
-        this.setState({ index: 0, swap: [], compare: [] , sortedIndices: []});
+        this.setState({ index: 0, swap: [], compare: [], sortedIndices: [] , mergeSteps: 1});
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
-            bar.style.borderBottom = '2px solid blueviolet';
+            bar.style.borderBottom = '4px solid blueviolet';
             bar.style.color = 'black';
         }
         this.stopAlgo();
@@ -51,18 +53,16 @@ class Bars extends React.Component {
         this.stopAlgo();
     };
 
-    
     // changes color of bars to success
     // this cleans up any bars not set to green
     success = () => {
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
-            bar.style.borderBottom = '2px solid forestgreen';
+            bar.style.borderBottom = '4px solid forestgreen';
             bar.style.color = 'forestgreen';
             bar.style.backgroundColor = 'skyblue';
         }
     };
-    
 
     // runs algorithm, stops when clicked twice
     startAlgo = () => {
@@ -96,8 +96,8 @@ class Bars extends React.Component {
         const indices = this.state.sortedIndices;
         indices[indices.length] = i;
         console.log(indices);
-        this.setState({ sortedIndices: indices })
-    }
+        this.setState({ sortedIndices: indices });
+    };
 
     setIndex = (index) => {
         this.setState({ index: index });
@@ -120,6 +120,7 @@ class Bars extends React.Component {
             func = this.mergeSort;
         }
 
+        this.resetArray();
         this.setState({ algorithm: func, index: 0 });
     };
 
@@ -150,9 +151,34 @@ class Bars extends React.Component {
     insertionSort() {
         console.log('in sort');
     }
-    mergeSort() {
-        console.log('merge sort');
-    }
+
+    mergeSort = () => {
+        // sort 0,1, sort 2,3, sort 3,4 and so on
+        // then sort [0, 1], [2, 3], [3,4] and [5, 6]
+        // we can create list to hold arrays, [0], [1]
+        let array = this.state.array.map((array) => {
+            return [array];
+        });
+
+        // first round
+        const mergeSteps = this.state.mergeSteps;
+        this.setState({ mergeSteps : mergeSteps + 1});
+        
+        for (let i = 0; i < mergeSteps; i++) {
+            let index = 0;
+            let size = array.length / 2;
+            // this runs whole round of merges for each iteration
+            while (index < size) {
+                // this merges to arrays
+                // we display these two arrays as purple
+                // display bars are red when they are merged
+                merge(index, index + 1, array, this.setSwap, this.setCompare, this.setArray);
+                index++;
+            }
+        }
+        // so just set index = 0, set size
+    };
+
     quickSort() {
         console.log('quick sort');
     }

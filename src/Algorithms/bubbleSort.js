@@ -29,7 +29,7 @@ function bubbleSort(
 
         for (let i = 0; i < sortedIndices.length; i++) {
             const bar = document.getElementById(`${sortedIndices[i]}`);
-            bar.style.borderBottom = '2px solid forestgreen';
+            bar.style.borderBottom = '4px solid forestgreen';
             bar.style.color = 'forestgreen';
             bar.style.backgroundColor = 'skyblue';
         }
