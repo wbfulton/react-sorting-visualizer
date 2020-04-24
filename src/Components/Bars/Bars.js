@@ -13,7 +13,7 @@ class Bars extends React.Component {
         // swap, compare hold indices of bars being swapped or compared at that instance
         // running tells us if algorithm is running
         this.state = {
-            algorithm: this.bubbleSort, // stores algo to use
+            algorithm: this.mergeSort, // stores algo to use
             array: [], // current array
             sortedArray: [], // sorted array for testing
             swap: [], // which bars to display swapped
@@ -23,7 +23,8 @@ class Bars extends React.Component {
             intervalTime: 50, // how often steps are called (ms)
             running: false, // if algo is running
             intervals: null, // variable to hold interval (so algo can run)
-            mergeSteps: 1,
+            mergeArray: [], // to state of array in merge form
+            mergeSize: 0
         };
     }
 
@@ -31,12 +32,26 @@ class Bars extends React.Component {
     componentDidMount() {
         const array = initArray();
         const sortedArray = sortArray(array);
-        this.setState({ array: array, sortedArray: sortedArray });
+        const mergeArray = array.map((array) => {
+            return [array];
+        });
+        const mergeSize = mergeArray.length / 2;
+        this.setState({
+            array: array,
+            sortedArray: sortedArray,
+            mergeArray: mergeArray,
+            mergeSize: mergeSize,
+        });
     }
 
     // resets all values
     resetArray = () => {
-        this.setState({ index: 0, swap: [], compare: [], sortedIndices: [] , mergeSteps: 1});
+        this.setState({
+            index: 0,
+            swap: [],
+            compare: [],
+            sortedIndices: []
+        });
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
             bar.style.borderBottom = '4px solid blueviolet';
@@ -110,14 +125,14 @@ class Bars extends React.Component {
     // Changes algorithm chosen by users
     chooseAlgorithm = (e) => {
         const stringAlgo = e.target.value;
-        let func = this.bubbleSort;
+        let func = this.mergeSort;
 
         if (stringAlgo === 'quickSort') {
             func = this.quickSort;
         } else if (stringAlgo === 'insertionSort') {
             func = this.insertionSort;
-        } else if (stringAlgo === 'mergeSort') {
-            func = this.mergeSort;
+        } else if (stringAlgo === 'bubbleSort') {
+            func = this.bubbleSort;
         }
 
         this.resetArray();
@@ -153,30 +168,44 @@ class Bars extends React.Component {
     }
 
     mergeSort = () => {
-        // sort 0,1, sort 2,3, sort 3,4 and so on
-        // then sort [0, 1], [2, 3], [3,4] and [5, 6]
-        // we can create list to hold arrays, [0], [1]
-        let array = this.state.array.map((array) => {
-            return [array];
-        });
+        // we hold current merge array in state
+        let array = this.state.mergeArray;
 
-        // first round
-        const mergeSteps = this.state.mergeSteps;
-        this.setState({ mergeSteps : mergeSteps + 1});
-        
-        for (let i = 0; i < mergeSteps; i++) {
-            let index = 0;
-            let size = array.length / 2;
-            // this runs whole round of merges for each iteration
-            while (index < size) {
-                // this merges to arrays
-                // we display these two arrays as purple
-                // display bars are red when they are merged
-                merge(index, index + 1, array, this.setSwap, this.setCompare, this.setArray);
-                index++;
+        // # merge steps = how far to go
+        // when we run this algo, it gets reset each time mergeSort is called
+        // this is because we convert every index to an array and perform merge()
+        let size = this.state.mergeSize;
+
+        if(this.state.index === size - 1) {
+            this.setIndex(0);
+            this.setState({mergeSize: (array.length / 2 - 0.5) })
+        }
+
+        // this runs whole round of merges for each iteration
+        if (this.state.index < size) {
+            // this merges to arrays
+            // we display these two arrays as purple
+            // display bars are red when they are merged
+            merge(
+                this.state.index,
+                this.state.index + 1,
+                array,
+                this.setSwap,
+                this.setCompare,
+                this.setArray,
+                this.setMergeArray,
+                this.state.compare
+            );
+            // so it doesn't go past
+            if(this.state.index !== size - 1) {
+                this.setIndex(this.state.index + 1);
             }
         }
         // so just set index = 0, set size
+    };
+
+    setMergeArray = (array) => {
+        this.setState({ mergeArray: array });
     };
 
     quickSort() {

@@ -16,9 +16,9 @@ function Selector(props) {
                 name="algorithm"
                 onChange={props.chooseAlgorithm}
             >
+                <option value="mergeSort">Merge Sort</option>
                 <option value="bubbleSort">Bubble Sort</option>
                 <option value="insertionSort">Insertion Sort</option>
-                <option value="mergeSort">Merge Sort</option>
                 <option value="quickSort">Quick Sort</option>
             </select>
             {/* Does One Step of the Algorithm */}
