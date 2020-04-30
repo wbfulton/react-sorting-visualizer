@@ -1,54 +1,50 @@
 // this performs merging of two arrays
-export const merge = (array, left, middle, right, setArray) => {
+export const merge = (
+    array,
+    left,
+    middle,
+    right,
+    L,
+    R,
+    leftIndex,
+    rightIndex,
+    arrayIndex,
+    setLeftIndex,
+    setRightIndex,
+    setArrayIndex
+) => {
     // index of where to end subarrays
     const endLeft = middle - left + 1;
     const endRight = right - middle;
 
-    // holds subarrays
-    let L = [];
-    let R = [];
-
-    // adds values from array into subarrays to be merged
-    for (let i = 0; i < endLeft; i++) {
-        L[i] = array[left + i];
-    }
-    for (let j = 0; j < endRight; j++) {
-        R[j] = array[middle + 1 + j];
-    }
-
-    let i = 0;
-    let j = 0;
-    let arrayIndex = left;
     // merges two arrays (except for largest values)
-    while (i < endLeft && j < endRight) {
-        const leftVal = L[i];
-        const rightVal = R[j];
+    if (leftIndex < endLeft && rightIndex < endRight) {
+        const leftVal = L[leftIndex];
+        const rightVal = R[rightIndex];
 
         // these are swaps
         if (leftVal < rightVal) {
             array[arrayIndex] = leftVal;
-            i++;
+            setLeftIndex(leftIndex + 1);
         } else {
             array[arrayIndex] = rightVal;
-            j++;
+            setRightIndex(rightIndex + 1);
         }
-        arrayIndex++;
-    }
 
-    // Adds remaining values from subarrays
-    while (i < endLeft) {
-        const leftVal = L[i];
+        setArrayIndex(arrayIndex + 1);
+    } else if (leftIndex < endLeft) {
+        console.log(L);
+        console.log(R);
+        const leftVal = L[leftIndex];
         array[arrayIndex] = leftVal;
-        i++;
-        arrayIndex++;
-    }
-    while (j < endRight) {
-        const rightVal = R[j];
-        array[arrayIndex] = rightVal;
-        j++;
-        arrayIndex++;
-    }
 
-    // setArray(array);
-    // no need to return array due to reference semantics
+        setLeftIndex(leftIndex + 1);
+        setArrayIndex(arrayIndex + 1);
+    } else if (rightIndex < endLeft) {
+        const rightVal = R[rightIndex];
+        array[arrayIndex] = rightVal;
+
+        setRightIndex(rightIndex + 1);
+        setArrayIndex(arrayIndex + 1);
+    }
 };
