@@ -32,7 +32,7 @@ class Bars extends React.Component {
             // holds states necessary for merge sort
             merge: {
                 subarray_size: 1,
-                left_start: 1,
+                left_start: 0,
             },
         };
     }
@@ -55,6 +55,10 @@ class Bars extends React.Component {
                 swap: [],
                 compare: [],
                 sortedIndices: [],
+            },
+            merge: {
+                subarray_size: 1,
+                left_start: 0,
             },
         });
         for (let i = 0; i < this.state.array.length; i++) {
@@ -185,24 +189,13 @@ class Bars extends React.Component {
         const array = this.state.array;
         const size = this.state.array.length;
 
-        let subarray_size = this.state.merge.subarray_size; // holds current size of sub arrays
+        const subarray_size = this.state.merge.subarray_size;
         let left_start = this.state.merge.left_start;
 
-        // each click
-        // increase left_start by 2 * subaray size
-        // when left_start >= size - 1
-        //      set left_start to zero, increase subarray_size by * 2
-        for (subarray_size = 1; subarray_size <= size - 1; subarray_size *= 2) {
-            // pick starting point of different
-            // subarrays of current size
-            for (
-                left_start = 0;
-                left_start < size - 1;
-                left_start += 2 * subarray_size
-            ) {
-                // Find ending point of left
-                // subarray. mid+1 is starting
-                // point of right
+        // checks if there is more sorting to do
+        if (subarray_size <= size - 1) {
+            // checks if current subarray size has been merged
+            if (left_start < size - 1) {
                 const mid = Math.min(left_start + subarray_size - 1, size - 1);
 
                 const right_end = Math.min(
@@ -210,13 +203,41 @@ class Bars extends React.Component {
                     size - 1
                 );
 
-                // Merge Subarrays arr[left_start...mid]
-                // & arr[mid+1...right_end]
+                
+                this.setCompare(left_start, right_end);
+
+                // we want to animate this in steps as well
                 merge(array, left_start, mid, right_end, this.setArray);
+
+                // move left start to next sub array pair
+                this.setLeftStart(left_start + 2 * subarray_size);
+            } else {
+                // call success once done
+                if (subarray_size > (size - 1) / 2) {
+                    this.success();
+                }
+                // reset left start
+                this.setLeftStart(0);
+                this.setSubArraySize(subarray_size * 2);
             }
+        } else {
+            // if user clicks after its sorted
+            this.success();
         }
 
         this.setArray(array);
+    };
+
+    setSubArraySize = (size) => {
+        const merge = this.state.merge;
+        merge.subarray_size = size;
+        this.setState({ merge: merge });
+    };
+
+    setLeftStart = (left_start) => {
+        const merge = this.state.merge;
+        merge.left_start = left_start;
+        this.setState({ merge: merge });
     };
 
     quickSort() {
