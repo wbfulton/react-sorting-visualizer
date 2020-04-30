@@ -16,15 +16,24 @@ class Bars extends React.Component {
             algorithm: this.mergeSort, // stores algo to use
             array: [], // current array
             sortedArray: [], // sorted array for testing
-            swap: [], // which bars to display swapped
-            compare: [], // which bars to display compared
             index: 0, // where the algo is looking
-            sortedIndices: [], // which bars are in final sorted place
-            intervalTime: 50, // how often steps are called (ms)
-            running: false, // if algo is running
-            intervals: null, // variable to hold interval (so algo can run)
-            mergeArray: [], // to state of array in merge form
-            mergeSize: 0
+            // holds states for displaying features
+            display: {
+                swap: [], // which bars to display swapped
+                compare: [], // which bars to display compared
+                sortedIndices: [], // which bars are in final sorted place
+            },
+            // holds states for running algo
+            automate: {
+                intervalTime: 50, // how often steps are called (ms)
+                running: false, // if algo is running
+                intervals: null, // variable to hold interval (so algo can run)
+            },
+            // holds states necessary for merge sort
+            merge: {
+                subarray_size: 1,
+                left_start: 1,
+            },
         };
     }
 
@@ -32,15 +41,9 @@ class Bars extends React.Component {
     componentDidMount() {
         const array = initArray();
         const sortedArray = sortArray(array);
-        const mergeArray = array.map((array) => {
-            return [array];
-        });
-        const mergeSize = mergeArray.length / 2;
         this.setState({
             array: array,
             sortedArray: sortedArray,
-            mergeArray: mergeArray,
-            mergeSize: mergeSize,
         });
     }
 
@@ -48,9 +51,11 @@ class Bars extends React.Component {
     resetArray = () => {
         this.setState({
             index: 0,
-            swap: [],
-            compare: [],
-            sortedIndices: []
+            display: {
+                swap: [],
+                compare: [],
+                sortedIndices: [],
+            },
         });
         for (let i = 0; i < this.state.array.length; i++) {
             const bar = document.getElementById(`${i}`);
@@ -63,8 +68,9 @@ class Bars extends React.Component {
 
     // changes speed
     setIntervalTime = (e) => {
-        const intervalTime = parseInt(e.target.value);
-        this.setState({ intervalTime: intervalTime });
+        const automate = this.state.automate;
+        automate.intervalTime = parseInt(e.target.value);
+        this.setState({ automate: automate });
         this.stopAlgo();
     };
 
@@ -82,36 +88,44 @@ class Bars extends React.Component {
     // runs algorithm, stops when clicked twice
     startAlgo = () => {
         // ensures only one auto runs at a time
-        if (!this.state.running) {
-            this.setState({ running: true });
-            this.setState({
-                intervals: setInterval(() => {
-                    // stops when array is sorted, and we are back to start of array
-                    // turns all bars green
-                    const array = this.state.array;
-                    const sortedArray = this.state.sortedArray;
+        if (!this.state.automate.running) {
+            const automate = this.state.automate;
+            automate.running = true;
+            this.setState({ automate: automate });
 
-                    if (isEqual(array, sortedArray) && this.state.index === 0) {
-                        this.stopAlgo();
-                        this.success();
-                    } else {
-                        this.state.algorithm();
-                    }
-                }, this.state.intervalTime),
-            });
+            const display = this.state.display;
+            display.intervals = setInterval(() => {
+                // stops when array is sorted, and we are back to start of array
+                // turns all bars green
+                const array = this.state.array;
+                const sortedArray = this.state.sortedArray;
+
+                if (isEqual(array, sortedArray) && this.state.index === 0) {
+                    this.stopAlgo();
+                    this.success();
+                } else {
+                    this.state.algorithm();
+                }
+            }, this.state.automate.intervalTime);
+
+            this.setState({ display: display });
         }
     };
 
     stopAlgo = () => {
-        clearInterval(this.state.intervals);
-        this.setState({ intervals: null, running: false });
+        clearInterval(this.state.display.intervals);
+        const automate = this.state.automate;
+        automate.intervals = null;
+        automate.running = false;
+        this.setState({ automate: automate });
     };
 
     addSortedIndices = (i) => {
-        const indices = this.state.sortedIndices;
+        const indices = this.state.display.sortedIndices;
         indices[indices.length] = i;
-        console.log(indices);
-        this.setState({ sortedIndices: indices });
+        const display = this.state.display;
+        display.sortedIndices = indices;
+        this.setState({ display: display });
     };
 
     setIndex = (index) => {
@@ -155,8 +169,8 @@ class Bars extends React.Component {
                 this.setCompare,
                 this.setSwap,
                 this.addSortedIndices,
-                this.state.sortedIndices,
-                this.state.compare
+                this.state.display.sortedIndices,
+                this.state.display.compare
             );
         } else {
             this.success();
@@ -168,44 +182,41 @@ class Bars extends React.Component {
     }
 
     mergeSort = () => {
-        // we hold current merge array in state
-        let array = this.state.mergeArray;
+        const array = this.state.array;
+        const size = this.state.array.length;
 
-        // # merge steps = how far to go
-        // when we run this algo, it gets reset each time mergeSort is called
-        // this is because we convert every index to an array and perform merge()
-        let size = this.state.mergeSize;
+        let subarray_size = this.state.merge.subarray_size; // holds current size of sub arrays
+        let left_start = this.state.merge.left_start;
 
-        if(this.state.index === size - 1) {
-            this.setIndex(0);
-            this.setState({mergeSize: (array.length / 2 - 0.5) })
-        }
+        // each click
+        // increase left_start by 2 * subaray size
+        // when left_start >= size - 1
+        //      set left_start to zero, increase subarray_size by * 2
+        for (subarray_size = 1; subarray_size <= size - 1; subarray_size *= 2) {
+            // pick starting point of different
+            // subarrays of current size
+            for (
+                left_start = 0;
+                left_start < size - 1;
+                left_start += 2 * subarray_size
+            ) {
+                // Find ending point of left
+                // subarray. mid+1 is starting
+                // point of right
+                const mid = Math.min(left_start + subarray_size - 1, size - 1);
 
-        // this runs whole round of merges for each iteration
-        if (this.state.index < size) {
-            // this merges to arrays
-            // we display these two arrays as purple
-            // display bars are red when they are merged
-            merge(
-                this.state.index,
-                this.state.index + 1,
-                array,
-                this.setSwap,
-                this.setCompare,
-                this.setArray,
-                this.setMergeArray,
-                this.state.compare
-            );
-            // so it doesn't go past
-            if(this.state.index !== size - 1) {
-                this.setIndex(this.state.index + 1);
+                const right_end = Math.min(
+                    left_start + 2 * subarray_size - 1,
+                    size - 1
+                );
+
+                // Merge Subarrays arr[left_start...mid]
+                // & arr[mid+1...right_end]
+                merge(array, left_start, mid, right_end, this.setArray);
             }
         }
-        // so just set index = 0, set size
-    };
 
-    setMergeArray = (array) => {
-        this.setState({ mergeArray: array });
+        this.setArray(array);
     };
 
     quickSort() {
@@ -213,21 +224,30 @@ class Bars extends React.Component {
     }
 
     setCompare = (i, j) => {
+        const display = this.state.display;
+
         let compare = [];
         // so we can reset swap
         if (i !== -1 && j !== -1) {
             compare = [i, j];
         }
-        this.setState({ compare: compare });
+
+        display.compare = compare;
+        this.setState({ display: display });
     };
 
     setSwap = (i, j) => {
+        const display = this.state.display;
+
         let swap = [];
         // so we can reset swap
         if (i !== -1 && j !== -1) {
             swap = [i, j];
         }
-        this.setState({ swap: swap });
+
+        display.swap = swap;
+
+        this.setState({ display: display });
     };
 
     render() {
@@ -235,8 +255,12 @@ class Bars extends React.Component {
         return (
             <div>
                 <Selector
-                    sort={this.state.running ? this.stopAlgo : this.startAlgo}
-                    toggle={this.state.running}
+                    sort={
+                        this.state.automate.running
+                            ? this.stopAlgo
+                            : this.startAlgo
+                    }
+                    toggle={this.state.automate.running}
                     resetArray={this.resetArray}
                     algorithm={this.state.algorithm}
                     chooseAlgorithm={this.chooseAlgorithm}
@@ -248,8 +272,8 @@ class Bars extends React.Component {
                             key={i}
                             id={i}
                             value={value}
-                            swap={this.state.swap.includes(i)}
-                            compare={this.state.compare.includes(i)}
+                            swap={this.state.display.swap.includes(i)}
+                            compare={this.state.display.compare.includes(i)}
                         />
                     ))}
                 </div>

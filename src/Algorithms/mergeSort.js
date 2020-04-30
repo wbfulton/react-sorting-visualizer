@@ -1,65 +1,54 @@
 // this performs merging of two arrays
-export const merge = (
-    left,
-    right,
-    array,
-    setSwap,
-    setCompare,
-    setArray,
-    setMergeArray,
-    currCompare
-) => {
-    //setCompare(left, right);
-    const lookedAt = currCompare[0] === left && currCompare[1] === right;
+export const merge = (array, left, middle, right, setArray) => {
+    // index of where to end subarrays
+    const endLeft = middle - left + 1;
+    const endRight = right - middle;
 
-    let merged = [];
-    const size = array[left].length; // size of arrays to merge
+    // holds subarrays
+    let L = [];
+    let R = [];
+
+    // adds values from array into subarrays to be merged
+    for (let i = 0; i < endLeft; i++) {
+        L[i] = array[left + i];
+    }
+    for (let j = 0; j < endRight; j++) {
+        R[j] = array[middle + 1 + j];
+    }
 
     let i = 0;
     let j = 0;
+    let arrayIndex = left;
     // merges two arrays (except for largest values)
-    while (i < size && j < size) {
-        const leftVal = array[left][i];
-        const rightVal = array[right][j];
+    while (i < endLeft && j < endRight) {
+        const leftVal = L[i];
+        const rightVal = R[j];
 
         // these are swaps
         if (leftVal < rightVal) {
-            // swapping right with merged.length
-            merged.push(leftVal);
+            array[arrayIndex] = leftVal;
             i++;
         } else {
-            //setSwap(right, merged.length);
-            merged.push(rightVal);
+            array[arrayIndex] = rightVal;
             j++;
         }
+        arrayIndex++;
     }
 
-    // These add biggest values to our merged array
-    while (i < size) {
-        //setSwap(left, merged.length);
-        const leftVal = array[left][i];
-        merged.push(leftVal);
+    // Adds remaining values from subarrays
+    while (i < endLeft) {
+        const leftVal = L[i];
+        array[arrayIndex] = leftVal;
         i++;
+        arrayIndex++;
     }
-    while (j < size) {
-        //setSwap(right, merged.length);
-        const rightVal = array[right][j];
-        merged.push(rightVal);
+    while (j < endRight) {
+        const rightVal = R[j];
+        array[arrayIndex] = rightVal;
         j++;
+        arrayIndex++;
     }
 
-    array.splice(left, 1); // removes array at index
-    array[left] = merged; // adds merged array at index
-
-    setMergeArray(array);
-
-    // allows for array to be rendered into bars
-    let arr = [];
-    for (let i = 0; i < array.length; i++) {
-        for (let j = 0; j < array[i].length; j++) {
-            arr.push(array[i][j]);
-        }
-    }
-
-    setArray(arr);
+    // setArray(array);
+    // no need to return array due to reference semantics
 };
