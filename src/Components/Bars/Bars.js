@@ -38,6 +38,7 @@ class Bars extends React.Component {
                 arrayIndex: 0,
                 left_sub: [],
                 right_sub: [],
+                subArray: [] // holds indices of curr sub array
             },
         };
     }
@@ -69,6 +70,7 @@ class Bars extends React.Component {
                 arrayIndex: 0,
                 left_sub: [],
                 right_sub: [],
+                subArray: [] // holds indices of curr sub array
             },
         });
         for (let i = 0; i < this.state.array.length; i++) {
@@ -214,8 +216,6 @@ class Bars extends React.Component {
                     size - 1
                 );
 
-                this.setCompare(left_start, right_end);
-
                 // for internal merging
                 const leftIndex = this.state.merge.leftIndex;
                 const rightIndex = this.state.merge.rightIndex;
@@ -231,15 +231,19 @@ class Bars extends React.Component {
                     // needs to be here since the array is changing
                     let L = [];
                     let R = [];
+                    let subArray = [];
 
                     // adds values from array into subarrays to be merged
                     for (let i = 0; i < endLeft; i++) {
                         L[i] = array[left_start + i];
+                        subArray.push(left_start + i);
                     }
                     for (let j = 0; j < endRight; j++) {
                         R[j] = array[mid + 1 + j];
+                        subArray.push(mid + 1 + j);
                     }
 
+                    this.setSubArray(subArray);
                     this.setLeftSub(L);
                     this.setRightSub(R);
                 }
@@ -257,13 +261,19 @@ class Bars extends React.Component {
                         this.state.merge.arrayIndex,
                         this.setLeftIndex,
                         this.setRightIndex,
-                        this.setArrayIndex
+                        this.setArrayIndex,
+                        this.state.display.compare,
+                        this.setCompare,
+                        this.setSwap,
                     );
                 } else {
                     // for this only updated when merging is done
                     this.setLeftIndex(0);
                     this.setRightIndex(0);
                     this.setArrayIndex(left_start + 2 * subarray_size);
+
+                    this.setSwap(-1, -1);
+                    this.setCompare(-1, -1);
 
                     // move left start to next sub array pair
                     this.setLeftStart(left_start + 2 * subarray_size);
@@ -289,6 +299,12 @@ class Bars extends React.Component {
 
         this.setArray(array);
     };
+
+    setSubArray = (subArray) => {
+        const merge = this.state.merge;
+        merge.subArray = subArray;
+        this.setState({ merge: merge });
+    }
 
     setSubArraySize = (size) => {
         const merge = this.state.merge;
@@ -387,6 +403,7 @@ class Bars extends React.Component {
                             value={value}
                             swap={this.state.display.swap.includes(i)}
                             compare={this.state.display.compare.includes(i)}
+                            subArray={this.state.merge.subArray.includes(i)}
                         />
                     ))}
                 </div>
