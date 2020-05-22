@@ -11,7 +11,7 @@ export function getRandomInt(min, max) {
 export function initArray() {
     // changes number of bars on refresh
     const width = window.innerWidth;
-    const numBars = Math.floor(width / 40);
+    const numBars = Math.floor(width / 50);
     // changes height of bars on refresh
     const min = window.innerHeight * 0.025;
     const max = window.innerHeight * 0.6;
